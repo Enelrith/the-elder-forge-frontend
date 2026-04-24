@@ -9,12 +9,6 @@ export interface User {
   email: string;
 }
 
-export interface AccessJwtResponse {
-  accessToken: string;
-}
-
-export type LoginResponse = AccessJwtResponse;
-
 export interface Auth {
   email: string;
   password: string;

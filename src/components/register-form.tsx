@@ -13,9 +13,14 @@ export default function RegisterForm() {
   return (
     <form
       action={formAction}
-      className="m-auto mt-20 flex w-sm flex-col gap-y-2 rounded-md bg-gray-500 p-2"
+      className="forge-panel flex w-full flex-col gap-y-5 rounded-xs p-8 sm:p-10"
     >
-      <h2 className="text-center text-lg font-semibold">Register</h2>
+      <div className="space-y-3">
+        <p className="text-sm text-gray-300 uppercase">Sign Up</p>
+        <h2 className="forge-title text-3xl font-semibold">
+          Create Your Account
+        </h2>
+      </div>
 
       <FormInput
         label="email"
@@ -34,7 +39,7 @@ export default function RegisterForm() {
       />
 
       {state.errors?.message && (
-        <p className="text-sm text-red-400">{state.errors.message}</p>
+        <p className="text-danger text-sm">{state.errors.message}</p>
       )}
 
       <FormButton buttonValue="Sign Up" />

@@ -1,10 +1,10 @@
-import type { User } from "./auth";
+import type { User } from './auth';
 
 export interface Modlist {
   id: string;
   createdAt: string;
   name: string;
-  description: string;
+  description: string | null;
   isPublic: boolean;
   user: User;
   mods: Mod[];
@@ -35,9 +35,9 @@ export interface Mod {
   id: string;
   createdAt: string;
   name: string;
-  notes: string;
+  notes: string | null;
   priority: number;
-  category: Category;
+  category: Category | null;
 }
 
 export interface Plugin {
@@ -45,5 +45,5 @@ export interface Plugin {
   createdAt: string;
   name: string;
   priority: number;
-  mod: Mod;
+  mod: Mod | null;
 }

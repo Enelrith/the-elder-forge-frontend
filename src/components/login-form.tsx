@@ -21,7 +21,7 @@ export default function LoginForm() {
 
     try {
       await loginUser(email, password);
-      router.push('/');
+      router.push('/modlists');
       router.refresh();
     } catch (caughtError) {
       setError(caughtError as ErrorResponse);
@@ -33,9 +33,11 @@ export default function LoginForm() {
   return (
     <form
       action={handleSubmit}
-      className="m-auto mt-50 flex flex-col gap-y-2 bg-gray-500 p-2"
+      className="forge-panel flex w-100 flex-col gap-y-2 rounded-xs p-10 pt-5"
     >
-      <h2 className="m-auto text-lg font-semibold">Login</h2>
+      <div className="space-y-3">
+        <h2 className="forge-title mb-7 text-4xl font-semibold">Login</h2>
+      </div>
       <FormInput
         label="email"
         labelValue="Email:"
@@ -51,9 +53,7 @@ export default function LoginForm() {
         min={8}
         max={72}
       />
-      {error?.message && (
-        <p className="text-sm text-red-400">{error.message}</p>
-      )}
+      {error?.message && <p className="text-danger text-sm">{error.message}</p>}
       <FormButton
         buttonValue={isPending ? 'Logging in...' : 'Login'}
         disabled={isPending}
