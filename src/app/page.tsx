@@ -70,7 +70,7 @@ export default function Home() {
                     'You can very easily get the basic mods and plugins view by uploading your modlist.txt and loadorder.txt These can be found in your Mod Organizer 2 profile folder',
                   ],
                   [
-                    '2. Download the .meta build tool (Optional)',
+                    '2. Download the meta builder tool (Optional)',
                     'If you want advanced features such as links to nexus or automatic category mapping, you can download this lightweight tool.',
                   ],
                   [
@@ -79,12 +79,17 @@ export default function Home() {
                   ],
                 ].map(([step, copy]) => (
                   <div key={step} className="border-l border-(--line) pl-4">
-                    <h2 className="font-semibold tracking-[0.08em] text-(--accent-strong) uppercase">
-                      {step}
-                    </h2>
-                    <p className="mt-2 text-sm leading-7 text-(--muted)">
+                    <Link
+                      href={
+                        'https://github.com/Enelrith/the-elder-forge-meta-builder/releases/latest/download/TheElderForge-MetaBuilder.exe'
+                      }
+                      className="mt-2 text-sm leading-7 text-(--muted)"
+                    >
+                      <h2 className="font-semibold tracking-[0.08em] text-(--accent-strong) uppercase">
+                        {step}
+                      </h2>
                       {copy}
-                    </p>
+                    </Link>
                   </div>
                 ))}
               </div>

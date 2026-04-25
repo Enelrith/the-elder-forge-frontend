@@ -12,6 +12,16 @@ const baseConfig: AxiosRequestConfig = {
 
 export const axiosBase = axios.create(baseConfig);
 
+axiosBase.interceptors.request.use((config) => {
+  if (typeof document !== 'undefined') {
+    const match = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]*)/);
+    if (match) {
+      config.headers['X-XSRF-TOKEN'] = decodeURIComponent(match[1]);
+    }
+  }
+  return config;
+});
+
 axiosBase.interceptors.response.use(
   (response) => response,
   (error: AxiosError<ErrorResponse>) => {
