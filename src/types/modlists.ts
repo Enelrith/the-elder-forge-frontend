@@ -38,6 +38,7 @@ export interface Mod {
   notes: string | null;
   priority: number;
   category: Category | null;
+  nexusId: string | null;
 }
 
 export interface Plugin {

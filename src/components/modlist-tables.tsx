@@ -1,9 +1,15 @@
 'use client';
 
-import { Mod, Modlist, Plugin } from '@/types/modlists';
+import { Mod, Modlist } from '@/types/modlists';
 import { formatDate } from '@/util/util';
 import Link from 'next/link';
 import { useState } from 'react';
+
+function getNexusLink(mod: Mod) {
+  return mod.nexusId
+    ? 'https://www.nexusmods.com/skyrimspecialedition/mods/' + mod.nexusId
+    : '#';
+}
 
 export default function ModlistTables({ modlist }: { modlist: Modlist }) {
   const [hoveredModId, setHoveredModId] = useState<string | null>(null);
@@ -11,7 +17,6 @@ export default function ModlistTables({ modlist }: { modlist: Modlist }) {
     null
   );
 
-  // The active mod id from either side
   const activeMod = hoveredModId ?? hoveredPluginModId;
 
   return (
@@ -93,6 +98,7 @@ export default function ModlistTables({ modlist }: { modlist: Modlist }) {
                           .map((mod) => {
                             const isHighlighted = activeMod === mod.id;
                             console.log(`Mod: ${mod.name} | id: ${mod.id}`);
+                            const nexusLink = getNexusLink(mod);
                             return (
                               <tr
                                 key={mod.id}
@@ -105,9 +111,12 @@ export default function ModlistTables({ modlist }: { modlist: Modlist }) {
                                 }
                               >
                                 <td>
-                                  <div className="text-foreground truncate font-semibold hover:cursor-pointer">
+                                  <Link
+                                    href={nexusLink}
+                                    className="text-foreground block truncate font-semibold hover:cursor-pointer"
+                                  >
                                     {mod.name}
-                                  </div>
+                                  </Link>
                                 </td>
                                 <td className="truncate text-(--muted)">
                                   {mod.category
