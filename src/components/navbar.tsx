@@ -7,6 +7,12 @@ export default function Navbar() {
         <h2 className="font-semibold">The Elder Forge</h2>
       </Link>
       <nav className="flex items-center gap-2 text-sm">
+        <Link
+          className="forge-link rounded-full px-4 py-2"
+          href="/modlists/browse"
+        >
+          Browse
+        </Link>
         <Link className="forge-link rounded-full px-4 py-2" href="/modlists">
           Modlists
         </Link>

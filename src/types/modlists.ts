@@ -1,4 +1,5 @@
-import type { User } from './auth';
+import { Page } from '@/lib/page';
+import type { User, UserInfo } from './auth';
 
 export interface Modlist {
   id: string;
@@ -14,8 +15,22 @@ export interface Modlist {
 export interface ModlistInfo {
   id: string;
   createdAt: string;
+  updatedAt: string;
   name: string;
   isPublic: boolean;
+}
+
+export interface ModlistPagedInfo {
+  name: string;
+  id: string;
+  user: UserInfo;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface GetAllModlistsStruture {
+  content: ModlistPagedInfo[];
+  page: Page;
 }
 
 export interface AddModlist {

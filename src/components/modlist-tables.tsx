@@ -97,7 +97,6 @@ export default function ModlistTables({ modlist }: { modlist: Modlist }) {
                           .sort((a, b) => a.priority - b.priority)
                           .map((mod) => {
                             const isHighlighted = activeMod === mod.id;
-                            console.log(`Mod: ${mod.name} | id: ${mod.id}`);
                             const nexusLink = getNexusLink(mod);
                             return (
                               <tr
@@ -113,6 +112,8 @@ export default function ModlistTables({ modlist }: { modlist: Modlist }) {
                                 <td>
                                   <Link
                                     href={nexusLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
                                     className="text-foreground block truncate font-semibold hover:cursor-pointer"
                                   >
                                     {mod.name}
@@ -139,7 +140,6 @@ export default function ModlistTables({ modlist }: { modlist: Modlist }) {
               )}
             </section>
 
-            {/* Plugins table */}
             <section className="forge-panel min-w-0 rounded-xs p-3">
               <div className="mb-3 flex items-end justify-between border-b border-(--line) px-1 pb-2">
                 <h2 className="forge-title mt-1 text-xl font-semibold">

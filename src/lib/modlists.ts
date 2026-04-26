@@ -1,5 +1,6 @@
 import {
   AddModlist,
+  GetAllModlistsStruture,
   Mod,
   Modlist,
   ModlistInfo,
@@ -11,9 +12,12 @@ export async function getAllModlistsByUserEmail(
   cookieHeader?: string
 ): Promise<ModlistInfo[]> {
   try {
-    const { data } = await axiosBase.get<ModlistInfo[]>('/api/v1/modlists', {
-      headers: cookieHeader ? { Cookie: cookieHeader } : undefined,
-    });
+    const { data } = await axiosBase.get<ModlistInfo[]>(
+      '/api/v1/modlists/user',
+      {
+        headers: cookieHeader ? { Cookie: cookieHeader } : undefined,
+      }
+    );
 
     return data;
   } catch (error) {
@@ -26,6 +30,17 @@ export async function getAllModlistsByUserEmail(
       return [];
     }
 
+    throw error;
+  }
+}
+
+export async function getAllModlists(pageNumber: number) {
+  try {
+    const { data } = await axiosBase.get<GetAllModlistsStruture>(
+      `api/v1/modlists?page=${pageNumber}`
+    );
+    return data;
+  } catch (error) {
     throw error;
   }
 }
@@ -62,9 +77,6 @@ export async function addModlist(request: AddModlist): Promise<Modlist> {
   return data;
 }
 
-// The backend expects a multipart/form-data request with a part named
-// "modlistFile" containing the modlist.txt file. Axios automatically sets
-// the correct Content-Type boundary when a FormData body is provided.
 export async function addModsByFile(
   modlistId: string,
   file: File
@@ -81,8 +93,6 @@ export async function addModsByFile(
   return data;
 }
 
-// The backend expects a multipart/form-data request with a part named
-// "loadOrderFile" containing the loadorder.txt file.
 export async function addPluginsByFile(
   modlistId: string,
   file: File

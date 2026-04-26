@@ -23,8 +23,11 @@ export default function ModlistCard({
           {modlistInfo.name}
         </h3>
         <div className="mt-8 flex items-center justify-between border-t border-(--line) pt-4">
-          <p className="text-xs tracking-[0.18em] text-(--muted) uppercase">
-            {formatDate(modlistInfo.createdAt)}
+          <p className="text-[0.6rem] tracking-[0.18em] text-(--muted) uppercase">
+            Created: {formatDate(modlistInfo.createdAt)}
+          </p>
+          <p className="text-[0.6rem] tracking-[0.18em] text-(--muted) uppercase">
+            Updated: {formatDate(modlistInfo.updatedAt)}
           </p>
         </div>
       </Link>

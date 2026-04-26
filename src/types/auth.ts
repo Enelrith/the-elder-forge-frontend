@@ -9,6 +9,10 @@ export interface User {
   email: string;
 }
 
+export interface UserInfo {
+  email: string;
+}
+
 export interface Auth {
   email: string;
   password: string;
