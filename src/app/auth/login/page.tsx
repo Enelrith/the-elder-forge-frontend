@@ -1,9 +1,12 @@
 import LoginForm from '@/components/login-form';
+import PageContainer from '@/components/layout/page-container';
 
 export default function Login() {
   return (
-    <section className="m-auto mr-auto ml-auto w-fit">
-      <LoginForm />
-    </section>
+    <PageContainer>
+      <section className="mx-auto max-w-md">
+        <LoginForm />
+      </section>
+    </PageContainer>
   );
 }

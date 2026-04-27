@@ -11,7 +11,7 @@ export default function FormButton({
     <button
       type="submit"
       disabled={disabled}
-      className="mt-4 w-full rounded-xs border bg-gray-300 px-5 py-3 text-gray-900 hover:cursor-pointer"
+      className="btn-primary mt-2 w-full disabled:cursor-not-allowed disabled:opacity-60"
     >
       {buttonValue}
     </button>

@@ -13,13 +13,17 @@ export default function RegisterForm() {
   return (
     <form
       action={formAction}
-      className="forge-panel flex w-full flex-col gap-y-5 rounded-xs p-8 sm:p-10"
+      className="surface-panel flex w-full flex-col gap-4 p-5 sm:p-6"
     >
-      <div className="space-y-3">
-        <p className="text-sm text-gray-300 uppercase">Sign Up</p>
+      <div className="space-y-2 border-b border-stone-700 pb-4">
+        <p className="forge-kicker">Sign Up</p>
         <h2 className="forge-title text-3xl font-semibold">
           Create Your Account
         </h2>
+        <p className="text-muted text-sm leading-6">
+          Start a vault for your Skyrim load orders and share them when they are
+          ready.
+        </p>
       </div>
 
       <FormInput
@@ -39,7 +43,7 @@ export default function RegisterForm() {
       />
 
       {state.errors?.message && (
-        <p className="text-danger text-sm">{state.errors.message}</p>
+        <p className="text-sm text-red-300">{state.errors.message}</p>
       )}
 
       <FormButton buttonValue="Sign Up" />

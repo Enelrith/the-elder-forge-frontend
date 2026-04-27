@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { addModlist, addModsByFile, addPluginsByFile } from '@/lib/modlists';
-import { ErrorResponse } from '@/types/api';
+import type { ErrorResponse } from '@/types/api';
 import FormButton from './ui/form-button';
 import FormInput from './ui/form-input';
+import ToggleSwitch from './ui/toggle-switch';
 
 type Step =
   | 'idle'
@@ -19,7 +20,7 @@ const STEP_LABELS: Record<Step, string> = {
   creating: 'Creating modlist...',
   'uploading-mods': 'Uploading mods...',
   'uploading-plugins': 'Uploading plugins...',
-  done: 'Done!',
+  done: 'Done',
 };
 
 function getValidFile(formData: FormData, key: string): File | null {
@@ -45,7 +46,6 @@ export default function AddModlistForm() {
 
     const name = formData.get('name') as string;
     const description = formData.get('description') as string;
-
     const modlistFile = getValidFile(formData, 'modlistFile');
     const loadOrderFile = getValidFile(formData, 'loadOrderFile');
 
@@ -73,14 +73,14 @@ export default function AddModlistForm() {
   return (
     <form
       action={handleSubmit}
-      className="forge-panel flex w-full flex-col gap-y-6 rounded-xs p-8 sm:p-10"
+      className="surface-panel flex w-full flex-col gap-6 p-5 sm:p-6"
     >
-      <div className="space-y-2 border-b border-(--line) pb-6">
+      <div className="space-y-2 border-b border-stone-700 pb-5">
         <p className="forge-kicker">New Entry</p>
         <h2 className="forge-title text-3xl font-semibold">Create Modlist</h2>
-        <p className="text-sm text-(--muted)">
-          Give your modlist a name, then optionally upload your MO2 export files
-          to populate it immediately.
+        <p className="text-muted text-sm leading-6">
+          Give the archive a name, choose its visibility, and optionally upload
+          your Mod Organizer 2 exports.
         </p>
       </div>
 
@@ -93,8 +93,8 @@ export default function AddModlistForm() {
           max={255}
         />
 
-        <div className="flex flex-col gap-y-2">
-          <label htmlFor="description" className="text-sm">
+        <div className="space-y-2">
+          <label htmlFor="description" className="text-sm font-medium">
             Description
           </label>
           <textarea
@@ -102,35 +102,26 @@ export default function AddModlistForm() {
             name="description"
             maxLength={5000}
             rows={4}
-            placeholder="Describe your load order, goals, or any notes for viewers…"
-            className="resize-none rounded-xs border border-(--line) bg-gray-800 p-2 text-sm leading-6 transition outline-none focus:border-gray-500 focus:bg-gray-700"
+            placeholder="Describe your load order, goals, or notes for viewers..."
+            className="field-input min-h-28 resize-none leading-6"
           />
         </div>
 
-        <div className="flex items-center justify-between rounded-xs border border-(--line) bg-gray-800/40 px-4 py-3">
+        <div className="flex items-center justify-between gap-4 rounded-xs border border-stone-700 bg-stone-900 px-4 py-3">
           <div>
             <p className="text-sm font-medium">Visibility</p>
-            <p className="text-xs text-(--muted)">
+            <p className="text-muted text-xs">
               {isPublic
                 ? 'Anyone can view this modlist.'
                 : 'Only you can view this modlist.'}
             </p>
           </div>
-          <button
-            type="button"
-            role="switch"
-            aria-checked={isPublic}
-            onClick={() => setIsPublic((v) => !v)}
-            className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus:outline-none ${
-              isPublic ? 'bg-(--accent)' : 'bg-gray-600'
-            }`}
-          >
-            <span
-              className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
-                isPublic ? 'translate-x-5' : 'translate-x-0.5'
-              }`}
-            />
-          </button>
+          <ToggleSwitch
+            checked={isPublic}
+            disabled={isPending}
+            label="Toggle modlist visibility"
+            onChange={() => setIsPublic((value) => !value)}
+          />
         </div>
       </fieldset>
 
@@ -140,7 +131,7 @@ export default function AddModlistForm() {
             MO2 Files{' '}
             <span className="forge-kicker text-[0.6rem]">Optional</span>
           </p>
-          <p className="text-xs text-(--muted)">
+          <p className="text-muted text-xs">
             Found in your Mod Organizer 2 profile folder. Both files must be
             named exactly as shown below.
           </p>
@@ -164,14 +155,14 @@ export default function AddModlistForm() {
       </fieldset>
 
       {isPending && (
-        <div className="flex items-center gap-2 text-sm text-(--accent-strong)">
-          <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-(--accent) border-t-transparent" />
+        <div className="flex items-center gap-2 text-sm text-amber-200">
+          <span className="inline-block h-3 w-3 animate-spin rounded-xs border-2 border-amber-400 border-t-transparent" />
           {STEP_LABELS[step]}
         </div>
       )}
 
       {error && (
-        <div className="rounded-xs border border-[rgba(216,139,125,0.25)] bg-[rgba(216,139,125,0.07)] px-4 py-3 text-sm text-(--danger)">
+        <div className="rounded-xs border border-red-900 bg-red-950 px-4 py-3 text-sm text-red-200">
           {error.validationErrors ? (
             <ul className="space-y-1">
               {Object.entries(error.validationErrors).map(([field, msg]) => (
@@ -209,27 +200,27 @@ function FileDropZone({
 }: FileDropZoneProps) {
   const [fileName, setFileName] = useState<string | null>(null);
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setFileName(e.target.files?.[0]?.name ?? null);
+  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setFileName(event.target.files?.[0]?.name ?? null);
   }
 
   return (
     <label
       htmlFor={id}
-      className={`group flex cursor-pointer items-center justify-between gap-4 rounded-xs border border-dashed border-(--line) px-4 py-3 transition hover:border-[rgba(184,154,104,0.4)] hover:bg-[rgba(184,154,104,0.04)] ${
+      className={`group flex cursor-pointer items-center justify-between gap-4 rounded-xs border border-dashed border-stone-700 px-4 py-3 transition-colors hover:border-amber-600 hover:bg-stone-900 ${
         disabled ? 'pointer-events-none opacity-50' : ''
       }`}
     >
       <div className="min-w-0">
-        <p className="truncate font-mono text-sm font-semibold text-(--accent-strong)">
+        <p className="truncate font-mono text-sm font-semibold text-amber-200">
           {label}
         </p>
-        <p className="mt-0.5 text-xs text-(--muted)">{hint}</p>
+        <p className="text-muted mt-0.5 text-xs">{hint}</p>
         {fileName && (
-          <p className="text-foreground mt-1 truncate text-xs">✓ {fileName}</p>
+          <p className="mt-1 truncate text-xs text-stone-100">{fileName}</p>
         )}
       </div>
-      <span className="shrink-0 rounded-xs border border-(--line) bg-gray-800 px-3 py-1.5 text-xs text-(--muted) transition group-hover:border-[rgba(184,154,104,0.3)] group-hover:text-(--accent-strong)">
+      <span className="text-muted shrink-0 rounded-xs border border-stone-700 bg-stone-950 px-3 py-1.5 text-xs transition-colors group-hover:border-amber-600 group-hover:text-amber-200">
         {fileName ? 'Change' : 'Choose file'}
       </span>
       <input

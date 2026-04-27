@@ -16,16 +16,18 @@ export default function FormInput({
   max,
 }: FormInputProps) {
   return (
-    <div className="flex flex-col gap-y-2">
-      <label htmlFor={label}>{labelValue}</label>
+    <div className="space-y-2">
+      <label htmlFor={label} className="text-sm font-medium text-stone-200">
+        {labelValue}
+      </label>
       <input
         id={label}
         type={type}
         name={label}
         required={required}
-        min={min}
-        max={max}
-        className="rounded-xs border border-(--line) bg-gray-800 p-2 text-sm transition outline-none focus:border-gray-500 focus:bg-gray-700"
+        minLength={min}
+        maxLength={max}
+        className="field-input"
       />
     </div>
   );

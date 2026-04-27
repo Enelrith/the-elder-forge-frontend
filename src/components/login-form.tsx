@@ -34,10 +34,14 @@ export default function LoginForm() {
   return (
     <form
       action={handleSubmit}
-      className="forge-panel flex w-100 flex-col gap-y-2 rounded-xs p-10 pt-5"
+      className="surface-panel flex w-full flex-col gap-4 p-5 sm:p-6"
     >
-      <div className="space-y-3">
-        <h2 className="forge-title mb-7 text-4xl font-semibold">Login</h2>
+      <div className="space-y-2 border-b border-stone-700 pb-4">
+        <p className="forge-kicker">Account</p>
+        <h2 className="forge-title text-3xl font-semibold">Login</h2>
+        <p className="text-muted text-sm leading-6">
+          Return to your vault and manage your load orders.
+        </p>
       </div>
       <FormInput
         label="email"
@@ -54,7 +58,9 @@ export default function LoginForm() {
         min={8}
         max={72}
       />
-      {error?.message && <p className="text-danger text-sm">{error.message}</p>}
+      {error?.message && (
+        <p className="text-sm text-red-300">{error.message}</p>
+      )}
       <FormButton
         buttonValue={isPending ? 'Logging in...' : 'Login'}
         disabled={isPending}

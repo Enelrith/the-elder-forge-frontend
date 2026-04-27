@@ -1,22 +1,18 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
-  --background: #0b0d11;
-  --foreground: #ebe4d8;
-  --muted: #b8b2a7;
-  --panel: rgba(19, 24, 31, 0.82);
-  --panel-strong: rgba(29, 36, 45, 0.95);
-  --panel-soft: rgba(66, 73, 84, 0.32);
-  --line: rgba(204, 189, 164, 0.14);
-  --accent: #b89a68;
-  --accent-strong: #d9c49a;
-  --accent-deep: #6f5b3f;
-  --danger: #d88b7d;
-  --shadow-lg: 0 24px 80px rgba(0, 0, 0, 0.48);
-  --font-display:
-    "Palatino Linotype", "Book Antiqua", "Times New Roman", serif;
-  --font-body: "Trebuchet MS", "Gill Sans", sans-serif;
-  --font-code: "Courier New", monospace;
+  --background: #0c0c0a;
+  --foreground: #f4f0e6;
+  --muted: #b8afa1;
+  --panel: #171612;
+  --panel-soft: #201e18;
+  --line: #403a2f;
+  --accent: #d6a756;
+  --accent-strong: #f0cf88;
+  --danger: #f0a39a;
+  --font-display: 'Palatino Linotype', 'Book Antiqua', 'Times New Roman', serif;
+  --font-body: 'Trebuchet MS', 'Segoe UI', sans-serif;
+  --font-code: 'Courier New', monospace;
 }
 
 @theme inline {
@@ -35,51 +31,35 @@ html {
 }
 
 body {
+  min-height: 100vh;
   background: var(--background);
   color: var(--foreground);
-  background-image:
-    radial-gradient(circle at top left, rgba(184, 154, 104, 0.17), transparent 24%),
-    radial-gradient(circle at top right, rgba(121, 136, 157, 0.16), transparent 26%),
-    linear-gradient(180deg, #161b22 0%, #0f1318 42%, #090b0f 100%);
   font-family: var(--font-body), sans-serif;
-  min-height: 100vh;
 }
 
-a {
-  transition:
-    color 160ms ease,
-    opacity 160ms ease,
-    transform 160ms ease;
-}
-
+a,
 button,
-input {
+input,
+textarea {
   font: inherit;
 }
 
-::selection {
-  background: rgba(217, 196, 154, 0.22);
+a,
+button {
+  transition:
+    border-color 140ms ease,
+    background-color 140ms ease,
+    color 140ms ease,
+    opacity 140ms ease;
 }
 
-.display-font {
-  font-family: var(--font-display), serif;
+::selection {
+  background: #5f4b2a;
+  color: var(--foreground);
 }
 
 .page-frame {
   position: relative;
-  isolation: isolate;
-}
-
-.page-frame::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.02) 48%, transparent 100%),
-    radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.38) 100%);
-  opacity: 0.72;
-  z-index: -1;
 }
 
 .page-shell {
@@ -87,47 +67,46 @@ input {
   width: min(1180px, calc(100% - 2rem));
 }
 
+.surface-panel,
 .forge-panel {
   border: 1px solid var(--line);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 26%),
-    linear-gradient(180deg, var(--panel-strong), var(--panel));
-  box-shadow: var(--shadow-lg);
-  backdrop-filter: blur(16px);
+  border-radius: 0.125rem;
+  background: var(--panel);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.22);
 }
 
+.surface-card,
 .forge-outline {
   border: 1px solid var(--line);
-  background: rgba(215, 224, 234, 0.03);
+  border-radius: 0.125rem;
+  background: var(--panel-soft);
+}
+
+.surface-card {
+  transition:
+    border-color 140ms ease,
+    background-color 140ms ease;
+}
+
+.surface-card:hover {
+  border-color: #806633;
+  background: #242118;
 }
 
 .forge-kicker {
   color: var(--accent-strong);
   font-family: var(--font-code), monospace;
-  font-size: 0.72rem;
-  letter-spacing: 0.18em;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .forge-title {
   font-family: var(--font-display), serif;
-  letter-spacing: 0.02em;
-}
-
-.forge-grid {
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-  background-size: 32px 32px;
+  letter-spacing: 0;
 }
 
 .forge-link:hover {
-  color: var(--accent-strong);
-}
-
-.forge-badge {
-  border: 1px solid rgba(217, 196, 154, 0.2);
-  background: rgba(217, 196, 154, 0.08);
   color: var(--accent-strong);
 }
 
@@ -139,15 +118,102 @@ input {
   color: var(--danger);
 }
 
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 0.125rem;
+  padding: 0.5rem 0.75rem;
+  color: var(--muted);
+}
+
+.nav-link:hover {
+  border-color: var(--line);
+  color: var(--accent-strong);
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-ghost,
+.btn-danger,
+.btn-disabled {
+  border-radius: 0.125rem;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.btn-primary {
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #16130d;
+}
+
+.btn-primary:hover {
+  border-color: var(--accent-strong);
+  background: var(--accent-strong);
+}
+
+.btn-secondary,
+.btn-ghost {
+  border: 1px solid var(--line);
+  background: #11100d;
+  color: var(--muted);
+}
+
+.btn-secondary:hover,
+.btn-ghost:hover {
+  border-color: #806633;
+  color: var(--accent-strong);
+}
+
+.btn-danger {
+  border: 1px solid #7f1d1d;
+  background: #1f1111;
+  color: var(--danger);
+}
+
+.btn-danger:hover {
+  border-color: #b91c1c;
+  background: #2a1515;
+}
+
+.btn-disabled {
+  display: inline-flex;
+  border: 1px solid var(--line);
+  color: #78716c;
+  opacity: 0.65;
+}
+
+.field-input {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 0.125rem;
+  background: #11100d;
+  padding: 0.625rem 0.75rem;
+  color: var(--foreground);
+  font-size: 0.875rem;
+  outline: none;
+}
+
+.field-input::placeholder {
+  color: #857b6d;
+}
+
+.field-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgb(214 167 86 / 0.18);
+}
+
 .forge-table-shell {
   overflow: hidden;
-  border: 1px solid rgba(204, 189, 164, 0.12);
-  border-radius: 0.9rem;
-  background: rgba(9, 12, 16, 0.84);
+  border: 1px solid var(--line);
+  border-radius: 0.125rem;
+  background: #11100d;
 }
 
 .forge-table-scroll {
-  max-height: 40rem;
+  max-height: 42rem;
   overflow: auto;
 }
 
@@ -155,7 +221,7 @@ input {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
-  font-size: 0.78rem;
+  font-size: 0.8rem;
 }
 
 .forge-table thead th {
@@ -163,31 +229,31 @@ input {
   top: 0;
   z-index: 1;
   border-bottom: 1px solid var(--line);
-  background: rgba(24, 30, 38, 0.97);
+  background: #171612;
   color: var(--muted);
   font-family: var(--font-code), monospace;
-  font-size: 0.64rem;
+  font-size: 0.68rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
 .forge-table th,
 .forge-table td {
-  padding: 0.4rem 0.55rem;
+  padding: 0.5rem 0.6rem;
   text-align: left;
   vertical-align: middle;
 }
 
 .forge-table tbody tr {
-  border-bottom: 1px solid rgba(204, 189, 164, 0.07);
-  transition: background-color 140ms ease;
+  border-bottom: 1px solid #2b261f;
 }
 
 .forge-table tbody tr:nth-child(even) {
-  background: rgba(206, 218, 235, 0.025);
+  background: #15130f;
 }
 
-.forge-table tbody tr:hover {
-  background: rgba(184, 154, 104, 0.08);
+.forge-table tbody tr:hover,
+.forge-table tbody tr.is-linked-row {
+  background: #2b2114;
 }
