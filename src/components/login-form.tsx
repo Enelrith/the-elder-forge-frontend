@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import FormInput from './ui/form-input';
 import FormButton from './ui/form-button';
 import { ErrorResponse } from '@/types/api';
-import { loginUser } from '@/lib/auth';
+import { loginUser, persistAuthenticatedEmail } from '@/lib/auth';
 
 export default function LoginForm() {
   const router = useRouter();
@@ -21,6 +21,7 @@ export default function LoginForm() {
 
     try {
       await loginUser(email, password);
+      persistAuthenticatedEmail(email);
       router.push('/modlists');
       router.refresh();
     } catch (caughtError) {
