@@ -34,10 +34,16 @@ export async function getAllModlistsByUserEmail(
   }
 }
 
-export async function getAllModlists(pageNumber: number) {
+export async function getAllModlists(pageNumber: number, name?: string) {
   try {
     const { data } = await axiosBase.get<GetAllModlistsStruture>(
-      `api/v1/modlists?page=${pageNumber}`
+      '/api/v1/modlists',
+      {
+        params: {
+          page: pageNumber,
+          ...(name ? { name } : {}),
+        },
+      }
     );
     return data;
   } catch (error) {
@@ -75,6 +81,10 @@ export async function getModlistById(
 export async function addModlist(request: AddModlist): Promise<Modlist> {
   const { data } = await axiosBase.post<Modlist>('/api/v1/modlists', request);
   return data;
+}
+
+export async function deleteModlist(modlistId: string): Promise<void> {
+  await axiosBase.delete(`/api/v1/modlists/${modlistId}`);
 }
 
 export async function addModsByFile(
