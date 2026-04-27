@@ -122,7 +122,7 @@ function DetailItem({ label, value }: { label: string; value: string }) {
   return (
     <div>
       <dt className="forge-kicker text-xs">{label}</dt>
-      <dd className="mt-1 break-words text-stone-100">{value}</dd>
+      <dd className="mt-1 wrap-break-word text-stone-100">{value}</dd>
     </div>
   );
 }
