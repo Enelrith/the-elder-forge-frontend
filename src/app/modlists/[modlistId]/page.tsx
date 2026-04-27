@@ -1,19 +1,13 @@
-import { cookies } from 'next/headers';
-import Link from 'next/link';
 import { getModlistById } from '@/lib/modlists';
 import ModlistTables from '@/components/modlist-tables';
+import { getCookieHeader } from '@/lib/server-auth';
+import PageContainer from '@/components/layout/page-container';
+import EmptyState from '@/components/ui/empty-state';
+import ButtonLink from '@/components/ui/button-link';
 
 async function getModlist(modlistId: string) {
-  const cookieHeader = (await cookies())
-    .getAll()
-    .map(({ name, value }) => `${name}=${value}`)
-    .join('; ');
-
-  if (!cookieHeader) {
-    return null;
-  }
-
-  return getModlistById(modlistId, cookieHeader);
+  const cookieHeader = await getCookieHeader();
+  return getModlistById(modlistId, cookieHeader || undefined);
 }
 
 export default async function ModlistDetail({
@@ -26,26 +20,19 @@ export default async function ModlistDetail({
 
   if (!modlist) {
     return (
-      <section className="page-frame flex py-10">
-        <div className="page-shell">
-          <div className="forge-panel rounded-xs p-10 text-center">
-            <p className="forge-kicker">Modlist Missing</p>
-            <h1 className="forge-title mt-4 text-5xl font-semibold">
-              That record could not be opened.
-            </h1>
-            <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-(--muted)">
-              The modlist may not belong to the current session, may not exist,
-              or the backend may not have returned it yet.
-            </p>
-            <Link
-              href="/modlists"
-              className="mt-8 inline-flex rounded-xs bg-(--accent) px-5 py-3 font-semibold text-[#1b1410]"
-            >
-              Return to vault
-            </Link>
-          </div>
-        </div>
-      </section>
+      <PageContainer>
+        <section className="surface-panel p-6">
+          <EmptyState
+            title="This modlist could not be opened."
+            description="It may be private, removed, or unavailable from the backend right now."
+            action={
+              <ButtonLink href="/modlists/browse" variant="primary">
+                Back to Browse
+              </ButtonLink>
+            }
+          />
+        </section>
+      </PageContainer>
     );
   }
 
