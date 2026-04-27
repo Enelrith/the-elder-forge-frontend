@@ -1,49 +1,68 @@
-import { cookies } from 'next/headers';
+import PageContainer from '@/components/layout/page-container';
+import PageHeading from '@/components/layout/page-heading';
 import ModlistCard from '@/components/modlist-card';
+import ButtonLink from '@/components/ui/button-link';
+import EmptyState from '@/components/ui/empty-state';
 import { getAllModlistsByUserEmail } from '@/lib/modlists';
+import { requireCookieHeader } from '@/lib/server-auth';
+import { ErrorResponse } from '@/types/api';
+import { redirect } from 'next/navigation';
 
 async function getModlists() {
-  const cookieHeader = (await cookies())
-    .getAll()
-    .map(({ name, value }) => `${name}=${value}`)
-    .join('; ');
+  const cookieHeader = await requireCookieHeader();
 
-  if (!cookieHeader) {
-    return [];
+  try {
+    return await getAllModlistsByUserEmail(cookieHeader);
+  } catch (caughtError) {
+    const error = caughtError as Partial<ErrorResponse>;
+
+    if (error.status === 401 || error.status === 403) {
+      redirect('/auth/login');
+    }
+
+    throw caughtError;
   }
-
-  return getAllModlistsByUserEmail(cookieHeader);
 }
 
 export default async function Modlists() {
   const modlists = await getModlists();
 
   return (
-    <section className="page-frame py-8">
-      <div className="page-shell space-y-8">
-        <header className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-          <div className="space-y-4">
-            <h2 className="forge-title text-5xl font-semibold sm:text-6xl">
-              Your Modlists
-            </h2>
-          </div>
-        </header>
+    <PageContainer>
+      <div className="space-y-6">
+        <PageHeading
+          eyebrow="Your Vault"
+          title="Modlists"
+          description="Manage your personal load orders, update visibility, and open each archive for a closer inspection."
+          actions={
+            <ButtonLink href="/modlists/add" variant="primary">
+              New Modlist
+            </ButtonLink>
+          }
+        />
 
-        <section className="forge-panel rounded-xs p-5">
-          <div className="border-b border-(--line) pb-3 sm:flex-row sm:items-end sm:justify-between">
-            <p className="text-sm text-(--muted)">
-              Modlists: {modlists.length}
+        <section className="surface-panel p-4 sm:p-5">
+          <div className="flex items-center justify-between border-b border-stone-700 pb-3">
+            <p className="text-muted text-sm">
+              {modlists.length} modlist{modlists.length !== 1 ? 's' : ''}
             </p>
+            <ButtonLink href="/modlists/browse" variant="ghost">
+              Browse Public
+            </ButtonLink>
           </div>
 
           {modlists.length === 0 ? (
-            <div className="py-16 text-center">
-              <p className="forge-title text-3xl font-semibold">
-                No modlists in the vault yet.
-              </p>
-            </div>
+            <EmptyState
+              title="No modlists in your vault yet."
+              description="Create your first archive, upload your MO2 files, and decide whether it stays private or goes public."
+              action={
+                <ButtonLink href="/modlists/add" variant="primary">
+                  Create Your First Modlist
+                </ButtonLink>
+              }
+            />
           ) : (
-            <ul className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            <ul className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {modlists.map((modlist) => (
                 <ModlistCard modlistInfo={modlist} key={modlist.id} />
               ))}
@@ -51,6 +70,6 @@ export default async function Modlists() {
           )}
         </section>
       </div>
-    </section>
+    </PageContainer>
   );
 }
