@@ -11,27 +11,11 @@ import { axiosBase } from './axios';
 export async function getAllModlistsByUserEmail(
   cookieHeader?: string
 ): Promise<ModlistInfo[]> {
-  try {
-    const { data } = await axiosBase.get<ModlistInfo[]>(
-      '/api/v1/modlists/user',
-      {
-        headers: cookieHeader ? { Cookie: cookieHeader } : undefined,
-      }
-    );
+  const { data } = await axiosBase.get<ModlistInfo[]>('/api/v1/modlists/user', {
+    headers: cookieHeader ? { Cookie: cookieHeader } : undefined,
+  });
 
-    return data;
-  } catch (error) {
-    if (
-      typeof error === 'object' &&
-      error !== null &&
-      'status' in error &&
-      (error.status === 401 || error.status === 403)
-    ) {
-      return [];
-    }
-
-    throw error;
-  }
+  return data;
 }
 
 export async function getAllModlists(pageNumber: number, name?: string) {
@@ -81,6 +65,15 @@ export async function getModlistById(
 export async function addModlist(request: AddModlist): Promise<Modlist> {
   const { data } = await axiosBase.post<Modlist>('/api/v1/modlists', request);
   return data;
+}
+
+export async function updateModlistVisibility(
+  modlistId: string,
+  isPublic: boolean
+): Promise<void> {
+  await axiosBase.patch(`/api/v1/modlists/${modlistId}/visibility`, {
+    isPublic,
+  });
 }
 
 export async function deleteModlist(modlistId: string): Promise<void> {
