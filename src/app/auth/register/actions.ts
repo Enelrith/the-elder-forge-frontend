@@ -8,10 +8,27 @@ export async function registerAction(
   formData: FormData
 ): Promise<ActionState> {
   const email = formData.get('email') as string;
+  const username = formData.get('username') as string;
   const password = formData.get('password') as string;
+  const confirmPassword = formData.get('confirmPassword') as string;
+
+  if (password !== confirmPassword) {
+    return {
+      errors: {
+        timestamp: new Date().toISOString(),
+        status: 400,
+        message: 'Passwords do not match.',
+        error: 'Bad Request',
+        path: '/auth/register',
+        validationErrors: {
+          confirmPassword: 'Passwords do not match.',
+        },
+      },
+    };
+  }
 
   try {
-    await registerUser(email, password);
+    await registerUser(email, password, username);
   } catch (error) {
     return { errors: error as ErrorResponse };
   }

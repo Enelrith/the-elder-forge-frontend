@@ -27,6 +27,13 @@ export default function RegisterForm() {
       </div>
 
       <FormInput
+        label="username"
+        labelValue="Username:"
+        type="text"
+        required={true}
+        max={20}
+      />
+      <FormInput
         label="email"
         labelValue="Email:"
         type="email"
@@ -41,9 +48,33 @@ export default function RegisterForm() {
         min={8}
         max={72}
       />
+      <FormInput
+        label="confirmPassword"
+        labelValue="Confirm Password:"
+        type="password"
+        required={true}
+        min={8}
+        max={72}
+      />
 
-      {state.errors?.message && (
-        <p className="text-sm text-red-300">{state.errors.message}</p>
+      {state.errors?.validationErrors ? (
+        <ul className="space-y-1 text-sm text-red-300">
+          {Object.entries(state.errors.validationErrors).map(
+            ([field, message]) => (
+              <li key={field}>{message}</li>
+            )
+          )}
+        </ul>
+      ) : state.errors?.message ? (
+        <p className="text-sm text-red-300" role="alert">
+          {state.errors.message}
+        </p>
+      ) : null}
+
+      {state.errors?.message && state.errors.validationErrors && (
+        <p className="sr-only" role="alert">
+          {state.errors.message}
+        </p>
       )}
 
       <FormButton buttonValue="Sign Up" />

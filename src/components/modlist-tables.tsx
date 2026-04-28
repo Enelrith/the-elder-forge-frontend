@@ -84,7 +84,10 @@ export default function ModlistTables({ modlist }: { modlist: Modlist }) {
         <div className="grid gap-4 xl:grid-cols-[18rem_minmax(0,1fr)]">
           <aside className="surface-panel h-fit p-4">
             <dl className="space-y-4 text-sm">
-              <DetailItem label="Made by" value={modlist.user.email} />
+              <DetailItem
+                label="Made by"
+                value={modlist.user.username || modlist.user.email}
+              />
               <DetailItem
                 label="Created"
                 value={formatDate(modlist.createdAt)}

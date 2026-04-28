@@ -27,7 +27,7 @@ export default function BrowseModlistCard({
 
         <div className="mt-auto border-t border-stone-700 pt-4">
           <p className="text-muted truncate text-xs tracking-wide uppercase">
-            Made by {modlist.user.email}
+            Made by {modlist.user.username || modlist.user.email}
           </p>
         </div>
       </Link>

@@ -4,41 +4,41 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import {
-  clearAuthenticatedEmail,
-  getAuthEmailEventName,
-  getAuthEmailStorageKey,
-  getPersistedAuthenticatedEmail,
+  clearAuthenticatedDisplayName,
+  getAuthDisplayNameEventName,
+  getAuthDisplayNameStorageKey,
+  getPersistedAuthenticatedDisplayName,
   logoutUser,
 } from '@/lib/auth';
 
 export default function Navbar() {
   const router = useRouter();
-  const [authEmail, setAuthEmail] = useState<string | null>(null);
+  const [authDisplayName, setAuthDisplayName] = useState<string | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const authEmailStorageKey = getAuthEmailStorageKey();
-    const authEmailEventName = getAuthEmailEventName();
+    const authDisplayNameStorageKey = getAuthDisplayNameStorageKey();
+    const authDisplayNameEventName = getAuthDisplayNameEventName();
 
-    function syncEmail() {
-      setAuthEmail(getPersistedAuthenticatedEmail());
+    function syncDisplayName() {
+      setAuthDisplayName(getPersistedAuthenticatedDisplayName());
     }
 
     function handleStorage(event: StorageEvent) {
-      if (event.key === authEmailStorageKey) {
-        syncEmail();
+      if (event.key === authDisplayNameStorageKey) {
+        syncDisplayName();
       }
     }
 
-    syncEmail();
+    syncDisplayName();
     window.addEventListener('storage', handleStorage);
-    window.addEventListener(authEmailEventName, syncEmail);
+    window.addEventListener(authDisplayNameEventName, syncDisplayName);
 
     return () => {
       window.removeEventListener('storage', handleStorage);
-      window.removeEventListener(authEmailEventName, syncEmail);
+      window.removeEventListener(authDisplayNameEventName, syncDisplayName);
     };
   }, []);
 
@@ -64,8 +64,8 @@ export default function Navbar() {
       await logoutUser();
     } catch {
     } finally {
-      clearAuthenticatedEmail();
-      setAuthEmail(null);
+      clearAuthenticatedDisplayName();
+      setAuthDisplayName(null);
       setIsMenuOpen(false);
       setIsLoggingOut(false);
       router.push('/');
@@ -90,14 +90,14 @@ export default function Navbar() {
             Modlists
           </Link>
 
-          {authEmail ? (
+          {authDisplayName ? (
             <div className="relative" ref={menuRef}>
               <button
                 className="nav-link flex max-w-52 items-center gap-2 text-left"
                 type="button"
                 onClick={() => setIsMenuOpen((open) => !open)}
               >
-                <span className="truncate">{authEmail}</span>
+                <span className="truncate">{authDisplayName}</span>
                 <span className="text-muted">{isMenuOpen ? '^' : 'v'}</span>
               </button>
               {isMenuOpen && (

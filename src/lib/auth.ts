@@ -1,16 +1,19 @@
 import { axiosBase } from './axios';
-import { User } from '@/types/auth';
+import { SessionAuth, User } from '@/types/auth';
 
-const AUTH_EMAIL_STORAGE_KEY = 'elder-forge.auth.email';
-const AUTH_EMAIL_EVENT_NAME = 'auth-email-changed';
+const AUTH_DISPLAY_NAME_STORAGE_KEY = 'elder-forge.auth.display-name';
+const LEGACY_AUTH_EMAIL_STORAGE_KEY = 'elder-forge.auth.email';
+const AUTH_DISPLAY_NAME_EVENT_NAME = 'auth-display-name-changed';
 
 export async function registerUser(
   email: string,
-  password: string
+  password: string,
+  username: string
 ): Promise<User> {
   const { data } = await axiosBase.post<User>('/api/v1/users', {
     email,
     password,
+    username,
   });
   return data;
 }
@@ -18,55 +21,62 @@ export async function registerUser(
 export async function loginUser(
   email: string,
   password: string
-): Promise<void> {
-  await axiosBase.post('/api/v1/auth', {
+): Promise<SessionAuth> {
+  const { data } = await axiosBase.post<SessionAuth>('/api/v1/auth', {
     email,
     password,
   });
+
+  return data;
 }
 
 export async function logoutUser(): Promise<void> {
   await axiosBase.post('/api/v1/auth/logout');
 }
 
-export function persistAuthenticatedEmail(email: string): void {
+export function persistAuthenticatedDisplayName(displayName: string): void {
   if (typeof window === 'undefined') {
     return;
   }
 
-  window.localStorage.setItem(AUTH_EMAIL_STORAGE_KEY, email);
+  window.localStorage.setItem(AUTH_DISPLAY_NAME_STORAGE_KEY, displayName);
+  window.localStorage.removeItem(LEGACY_AUTH_EMAIL_STORAGE_KEY);
   window.dispatchEvent(
-    new CustomEvent(AUTH_EMAIL_EVENT_NAME, {
-      detail: email,
+    new CustomEvent(AUTH_DISPLAY_NAME_EVENT_NAME, {
+      detail: displayName,
     })
   );
 }
 
-export function clearAuthenticatedEmail(): void {
+export function clearAuthenticatedDisplayName(): void {
   if (typeof window === 'undefined') {
     return;
   }
 
-  window.localStorage.removeItem(AUTH_EMAIL_STORAGE_KEY);
+  window.localStorage.removeItem(AUTH_DISPLAY_NAME_STORAGE_KEY);
+  window.localStorage.removeItem(LEGACY_AUTH_EMAIL_STORAGE_KEY);
   window.dispatchEvent(
-    new CustomEvent(AUTH_EMAIL_EVENT_NAME, {
+    new CustomEvent(AUTH_DISPLAY_NAME_EVENT_NAME, {
       detail: null,
     })
   );
 }
 
-export function getPersistedAuthenticatedEmail(): string | null {
+export function getPersistedAuthenticatedDisplayName(): string | null {
   if (typeof window === 'undefined') {
     return null;
   }
 
-  return window.localStorage.getItem(AUTH_EMAIL_STORAGE_KEY);
+  return (
+    window.localStorage.getItem(AUTH_DISPLAY_NAME_STORAGE_KEY) ??
+    window.localStorage.getItem(LEGACY_AUTH_EMAIL_STORAGE_KEY)
+  );
 }
 
-export function getAuthEmailStorageKey(): string {
-  return AUTH_EMAIL_STORAGE_KEY;
+export function getAuthDisplayNameStorageKey(): string {
+  return AUTH_DISPLAY_NAME_STORAGE_KEY;
 }
 
-export function getAuthEmailEventName(): string {
-  return AUTH_EMAIL_EVENT_NAME;
+export function getAuthDisplayNameEventName(): string {
+  return AUTH_DISPLAY_NAME_EVENT_NAME;
 }
