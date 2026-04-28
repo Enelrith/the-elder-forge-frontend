@@ -1,9 +1,17 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useMemo, useRef, useState } from 'react';
+import { addMetaBuilderInfoToModlist } from '@/lib/modlists';
+import type { ErrorResponse } from '@/types/api';
 import type { Mod, Modlist, Plugin } from '@/types/modlists';
 import { formatDate } from '@/util/util';
+
+const META_BUILDER_DOWNLOAD_URL =
+  'https://github.com/Enelrith/the-elder-forge-meta-builder/releases/latest/download/TheElderForge-MetaBuilder.exe';
+const META_BUILDER_GITHUB_URL =
+  'https://github.com/Enelrith/the-elder-forge-meta-builder';
 
 function getModLinkKeys(mod: Pick<Mod, 'id' | 'name'> | null | undefined) {
   if (!mod) {
@@ -47,6 +55,8 @@ export default function ModlistTables({
   const [hoveredPluginModKeys, setHoveredPluginModKeys] = useState<
     string[] | null
   >(null);
+  const [isMetadataMenuOpen, setIsMetadataMenuOpen] = useState(false);
+  const [isMetadataUploaded, setIsMetadataUploaded] = useState(false);
   const [modSearch, setModSearch] = useState('');
   const [pluginSearch, setPluginSearch] = useState('');
 
@@ -86,31 +96,61 @@ export default function ModlistTables({
             </p>
           </div>
           {isOwner && (
-            <Link
-              href={`/modlists/${modlist.id}/edit`}
-              className="btn-primary w-fit"
-            >
-              Edit Modlist
-            </Link>
+            <div className="relative flex flex-col gap-2 sm:flex-row sm:items-center">
+              {isMetadataUploaded && (
+                <div className="flex items-center gap-2 text-sm font-semibold text-emerald-300">
+                  <span
+                    className="flex h-5 w-5 items-center justify-center rounded-full border border-emerald-500 bg-emerald-950 text-xs"
+                    aria-hidden="true"
+                  >
+                    ✓
+                  </span>
+                  metadata uploaded
+                </div>
+              )}
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={() => setIsMetadataMenuOpen((open) => !open)}
+              >
+                Add Metadata
+              </button>
+              <Link
+                href={`/modlists/${modlist.id}/edit`}
+                className="btn-primary w-fit"
+              >
+                Edit Modlist
+              </Link>
+              {isMetadataMenuOpen && (
+                <MetadataUploadMenu
+                  modlistId={modlist.id}
+                  onClose={() => setIsMetadataMenuOpen(false)}
+                  onSuccess={() => setIsMetadataUploaded(true)}
+                />
+              )}
+            </div>
           )}
         </header>
 
         <div className="grid gap-4 xl:grid-cols-[18rem_minmax(0,1fr)]">
-          <aside className="surface-panel h-fit p-4">
-            <dl className="space-y-4 text-sm">
-              <DetailItem
-                label="Made by"
-                value={modlist.user.username || modlist.user.email}
-              />
-              <DetailItem
-                label="Created"
-                value={formatDate(modlist.createdAt)}
-              />
-              <DetailItem
-                label="Visibility"
-                value={modlist.isPublic ? 'Public' : 'Private'}
-              />
-            </dl>
+          <aside className="h-fit space-y-4">
+            <section className="surface-panel p-4">
+              <dl className="space-y-4 text-sm">
+                <DetailItem
+                  label="Made by"
+                  value={modlist.user.username || modlist.user.email}
+                />
+                <DetailItem
+                  label="Created"
+                  value={formatDate(modlist.createdAt)}
+                />
+                <DetailItem
+                  label="Visibility"
+                  value={modlist.isPublic ? 'Public' : 'Private'}
+                />
+              </dl>
+            </section>
+            {isOwner && <MetaBuilderCard />}
           </aside>
 
           <div className="grid min-w-0 gap-4 lg:grid-cols-2">
@@ -202,6 +242,153 @@ function TruncatedNameLink({
     </a>
   );
 }
+
+function MetaBuilderCard() {
+  return (
+    <section className="surface-card p-4">
+      <p className="forge-kicker text-xs">Meta Builder</p>
+      <h2 className="forge-title mt-2 text-xl font-semibold">
+        Add Nexus metadata
+      </h2>
+      <p className="text-muted mt-2 text-xs leading-5">
+        Run the tool against your MO2 profile, then upload the generated{' '}
+        <span className="font-mono text-amber-100">mod_data.txt</span> when
+        creating or updating this modlist.
+      </p>
+      <div className="mt-4 flex flex-col gap-2">
+        <Link
+          href={META_BUILDER_DOWNLOAD_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn-secondary inline-flex w-full items-center justify-center px-3 py-2 text-xs"
+        >
+          Download Tool
+        </Link>
+        <Link
+          href={META_BUILDER_GITHUB_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn-ghost inline-flex w-full items-center justify-center px-3 py-2 text-xs"
+        >
+          GitHub
+        </Link>
+      </div>
+    </section>
+  );
+}
+
+function MetadataUploadMenu({
+  modlistId,
+  onClose,
+  onSuccess,
+}: {
+  modlistId: string;
+  onClose: () => void;
+  onSuccess: () => void;
+}) {
+  const router = useRouter();
+  const [file, setFile] = useState<File | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  async function handleUpload() {
+    if (!file) {
+      setError('Choose mod_data.txt before uploading metadata.');
+      return;
+    }
+
+    setError(null);
+    setIsUploading(true);
+
+    try {
+      await addMetaBuilderInfoToModlist(modlistId, file);
+      onSuccess();
+      onClose();
+      router.refresh();
+    } catch (caughtError) {
+      const response = caughtError as Partial<ErrorResponse>;
+      setError(response.message ?? 'Failed to upload metadata.');
+    } finally {
+      setIsUploading(false);
+    }
+  }
+
+  return (
+    <div className="surface-panel absolute top-full right-0 z-20 mt-3 w-[min(24rem,calc(100vw-2rem))] p-4 text-left shadow-2xl">
+      <div className="space-y-3">
+        <div>
+          <p className="forge-kicker text-xs">Metadata Import</p>
+          <h2 className="forge-title mt-1 text-xl font-semibold">
+            Upload mod_data.txt
+          </h2>
+        </div>
+
+        <p className="text-muted text-xs leading-5">
+          This file is generated by the{' '}
+          <a
+            href={META_BUILDER_GITHUB_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-amber-200 hover:text-amber-100"
+          >
+            meta builder
+          </a>{' '}
+          tool and is created in your MO2 mods folder.
+        </p>
+
+        <a
+          href={META_BUILDER_DOWNLOAD_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="forge-link inline-flex text-xs font-semibold text-amber-200"
+        >
+          Download tool
+        </a>
+
+        <label htmlFor="modDataFile" className="block space-y-2">
+          <span className="text-sm font-medium">mod_data.txt</span>
+          <input
+            id="modDataFile"
+            type="file"
+            accept=".txt"
+            disabled={isUploading}
+            onChange={(event) => {
+              setFile(event.target.files?.[0] ?? null);
+              setError(null);
+            }}
+            className="field-input text-xs"
+          />
+        </label>
+
+        {error && (
+          <p className="text-xs leading-5 text-red-300" role="alert">
+            {error}
+          </p>
+        )}
+
+        <div className="flex justify-end gap-2">
+          <button
+            type="button"
+            disabled={isUploading}
+            onClick={onClose}
+            className="btn-ghost px-3 py-2 text-xs disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            disabled={isUploading}
+            onClick={handleUpload}
+            className="btn-primary px-3 py-2 text-xs disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isUploading ? 'Uploading...' : 'Upload Metadata'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 interface ModsTableProps {
   mods: Mod[];
   search: string;

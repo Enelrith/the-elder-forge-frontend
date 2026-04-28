@@ -123,3 +123,19 @@ export async function addPluginsByFile(
 
   return data;
 }
+
+export async function addMetaBuilderInfoToModlist(
+  modlistId: string,
+  file: File
+): Promise<Modlist> {
+  const formData = new FormData();
+  formData.append('modDataFile', file);
+
+  const { data } = await axiosBase.post<Modlist>(
+    `/api/v1/modlists/${modlistId}/meta`,
+    formData,
+    { headers: { 'Content-Type': 'multipart/form-data' } }
+  );
+
+  return data;
+}

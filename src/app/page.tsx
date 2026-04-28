@@ -1,6 +1,11 @@
 import PageContainer from '@/components/layout/page-container';
 import ButtonLink from '@/components/ui/button-link';
 
+const META_BUILDER_DOWNLOAD_URL =
+  'https://github.com/Enelrith/the-elder-forge-meta-builder/releases/latest/download/TheElderForge-MetaBuilder.exe';
+const META_BUILDER_GITHUB_URL =
+  'https://github.com/Enelrith/the-elder-forge-meta-builder';
+
 const features = [
   {
     title: 'Load Order Clarity',
@@ -98,13 +103,24 @@ export default function Home() {
               The companion tool can enrich exports with Nexus links and
               categories for players who want a more complete archive.
             </p>
-            <ButtonLink
-              href="https://github.com/Enelrith/the-elder-forge-meta-builder/releases/latest/download/TheElderForge-MetaBuilder.exe"
-              variant="ghost"
-              className="mt-4"
-            >
-              Download Tool
-            </ButtonLink>
+            <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+              <ButtonLink
+                href={META_BUILDER_DOWNLOAD_URL}
+                variant="ghost"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Download Tool
+              </ButtonLink>
+              <ButtonLink
+                href={META_BUILDER_GITHUB_URL}
+                variant="ghost"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                GitHub
+              </ButtonLink>
+            </div>
           </section>
         </aside>
       </div>
