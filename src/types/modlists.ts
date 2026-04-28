@@ -39,6 +39,12 @@ export interface AddModlist {
   isPublic: boolean;
 }
 
+export interface UpdateModlist {
+  name: string;
+  description: string;
+  isPublic: boolean;
+}
+
 export interface Category {
   id: string;
   createdAt: string;

@@ -36,7 +36,13 @@ function matchesName(name: string, search: string) {
   return name.toLowerCase().includes(search.trim().toLowerCase());
 }
 
-export default function ModlistTables({ modlist }: { modlist: Modlist }) {
+export default function ModlistTables({
+  modlist,
+  isOwner = false,
+}: {
+  modlist: Modlist;
+  isOwner?: boolean;
+}) {
   const [hoveredModKeys, setHoveredModKeys] = useState<string[] | null>(null);
   const [hoveredPluginModKeys, setHoveredPluginModKeys] = useState<
     string[] | null
@@ -79,6 +85,14 @@ export default function ModlistTables({ modlist }: { modlist: Modlist }) {
                 'No description has been written for this modlist yet.'}
             </p>
           </div>
+          {isOwner && (
+            <Link
+              href={`/modlists/${modlist.id}/edit`}
+              className="btn-primary w-fit"
+            >
+              Edit Modlist
+            </Link>
+          )}
         </header>
 
         <div className="grid gap-4 xl:grid-cols-[18rem_minmax(0,1fr)]">

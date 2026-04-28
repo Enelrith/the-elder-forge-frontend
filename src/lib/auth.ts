@@ -34,6 +34,19 @@ export async function logoutUser(): Promise<void> {
   await axiosBase.post('/api/v1/auth/logout');
 }
 
+export async function getCurrentSession(
+  cookieHeader?: string
+): Promise<SessionAuth | null> {
+  try {
+    const { data } = await axiosBase.get<SessionAuth>('/api/v1/auth', {
+      headers: cookieHeader ? { Cookie: cookieHeader } : undefined,
+    });
+    return data;
+  } catch {
+    return null;
+  }
+}
+
 export function persistAuthenticatedDisplayName(displayName: string): void {
   if (typeof window === 'undefined') {
     return;

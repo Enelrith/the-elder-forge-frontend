@@ -4,11 +4,7 @@ import { getCookieHeader } from '@/lib/server-auth';
 import PageContainer from '@/components/layout/page-container';
 import EmptyState from '@/components/ui/empty-state';
 import ButtonLink from '@/components/ui/button-link';
-
-async function getModlist(modlistId: string) {
-  const cookieHeader = await getCookieHeader();
-  return getModlistById(modlistId, cookieHeader || undefined);
-}
+import { getCurrentSession } from '@/lib/auth';
 
 export default async function ModlistDetail({
   params,
@@ -16,7 +12,11 @@ export default async function ModlistDetail({
   params: Promise<{ modlistId: string }>;
 }) {
   const { modlistId } = await params;
-  const modlist = await getModlist(modlistId);
+  const cookieHeader = await getCookieHeader();
+  const [modlist, session] = await Promise.all([
+    getModlistById(modlistId, cookieHeader || undefined),
+    getCurrentSession(cookieHeader || undefined),
+  ]);
 
   if (!modlist) {
     return (
@@ -36,5 +36,10 @@ export default async function ModlistDetail({
     );
   }
 
-  return <ModlistTables modlist={modlist} />;
+  return (
+    <ModlistTables
+      modlist={modlist}
+      isOwner={session?.email === modlist.user.email}
+    />
+  );
 }

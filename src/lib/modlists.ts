@@ -5,6 +5,7 @@ import {
   Modlist,
   ModlistInfo,
   Plugin,
+  UpdateModlist,
 } from '@/types/modlists';
 import { axiosBase } from './axios';
 
@@ -67,11 +68,22 @@ export async function addModlist(request: AddModlist): Promise<Modlist> {
   return data;
 }
 
+export async function updateModlist(
+  modlistId: string,
+  request: UpdateModlist
+): Promise<Modlist> {
+  const { data } = await axiosBase.patch<Modlist>(
+    `/api/v1/modlists/${modlistId}`,
+    request
+  );
+  return data;
+}
+
 export async function updateModlistVisibility(
   modlistId: string,
   isPublic: boolean
 ): Promise<void> {
-  await axiosBase.patch(`/api/v1/modlists/${modlistId}/visibility`, {
+  await axiosBase.patch(`/api/v1/modlists/${modlistId}`, {
     isPublic,
   });
 }

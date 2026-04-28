@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { deleteModlist, updateModlistVisibility } from '@/lib/modlists';
@@ -78,14 +79,26 @@ export default function ModlistCardActions({
             {isPublic ? 'Public' : 'Private'}
           </span>
         </div>
-        <button
-          type="button"
-          onClick={handleDelete}
-          disabled={isDeleting || isSavingVisibility}
-          className="btn-danger px-3 py-1.5 text-xs disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {isDeleting ? 'Deleting...' : 'Delete'}
-        </button>
+        <div className="flex items-center gap-2">
+          <Link
+            href={`/modlists/${id}/edit`}
+            className={`btn-secondary px-3 py-1.5 text-xs ${
+              isDeleting || isSavingVisibility
+                ? 'pointer-events-none opacity-50'
+                : ''
+            }`}
+          >
+            Edit
+          </Link>
+          <button
+            type="button"
+            onClick={handleDelete}
+            disabled={isDeleting || isSavingVisibility}
+            className="btn-danger px-3 py-1.5 text-xs disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isDeleting ? 'Deleting...' : 'Delete'}
+          </button>
+        </div>
       </div>
       {error && (
         <p className="text-xs leading-5 text-red-300" role="alert">
