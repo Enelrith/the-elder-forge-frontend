@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import type { Mod, Modlist, Plugin } from '@/types/modlists';
 import { formatDate } from '@/util/util';
 
@@ -144,6 +144,64 @@ function DetailItem({ label, value }: { label: string; value: string }) {
   );
 }
 
+function useOverflowTitle<T extends HTMLElement>(text: string) {
+  const ref = useRef<T | null>(null);
+  const [title, setTitle] = useState<string | undefined>();
+
+  function updateTitle() {
+    const element = ref.current;
+    setTitle(
+      element && element.scrollWidth > element.clientWidth ? text : undefined
+    );
+  }
+
+  return {
+    ref,
+    title,
+    onFocus: updateTitle,
+    onMouseEnter: updateTitle,
+  };
+}
+
+function TruncatedName({
+  text,
+  className,
+}: {
+  text: string;
+  className: string;
+}) {
+  const overflowTitle = useOverflowTitle<HTMLSpanElement>(text);
+
+  return (
+    <span {...overflowTitle} className={className}>
+      {text}
+    </span>
+  );
+}
+
+function TruncatedNameLink({
+  text,
+  href,
+  className,
+}: {
+  text: string;
+  href: string;
+  className: string;
+}) {
+  const overflowTitle = useOverflowTitle<HTMLAnchorElement>(text);
+
+  return (
+    <a
+      {...overflowTitle}
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={className}
+    >
+      {text}
+    </a>
+  );
+}
 interface ModsTableProps {
   mods: Mod[];
   search: string;
@@ -204,18 +262,16 @@ function ModsTable({
                     >
                       <td>
                         {nexusLink ? (
-                          <a
+                          <TruncatedNameLink
                             href={nexusLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                            text={mod.name}
                             className="block truncate font-semibold text-stone-100 hover:text-amber-200"
-                          >
-                            {mod.name}
-                          </a>
+                          />
                         ) : (
-                          <span className="block truncate font-semibold text-stone-100">
-                            {mod.name}
-                          </span>
+                          <TruncatedName
+                            text={mod.name}
+                            className="block truncate font-semibold text-stone-100"
+                          />
                         )}
                       </td>
                       <td className="text-muted truncate">
@@ -301,24 +357,25 @@ function PluginsTable({
                       className={isHighlighted ? 'is-linked-row' : ''}
                     >
                       <td>
-                        <div className="truncate font-semibold text-stone-100">
-                          {plugin.name}
-                        </div>
+                        <TruncatedName
+                          text={plugin.name}
+                          className="block truncate font-semibold text-stone-100"
+                        />
                       </td>
-                      <td className="text-muted truncate">
+                      <td>
                         {plugin.mod && nexusLink ? (
-                          <a
+                          <TruncatedNameLink
                             href={nexusLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-muted truncate hover:text-amber-200"
-                          >
-                            {plugin.mod.name}
-                          </a>
+                            text={plugin.mod.name}
+                            className="text-muted block truncate hover:text-amber-200"
+                          />
                         ) : plugin.mod ? (
-                          plugin.mod.name
+                          <TruncatedName
+                            text={plugin.mod.name}
+                            className="text-muted block truncate"
+                          />
                         ) : (
-                          'No Mod'
+                          <span className="text-muted">No Mod</span>
                         )}
                       </td>
                       <td className="font-mono text-xs font-semibold tracking-wide text-amber-200 uppercase">
